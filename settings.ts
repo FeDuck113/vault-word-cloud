@@ -5,11 +5,15 @@ import WordCloudPlugin from "./main";
 export interface WordCloudSettings {
     usePrepositions: boolean;
     maxWords: number;
+    directories: string[];
+    ignore_directories: string[];
 }
 
 export const DEFAULT_SETTINGS: WordCloudSettings = {
-    usePrepositions: true,
+    usePrepositions: false,
     maxWords: 100,
+    directories: [],
+    ignore_directories: [],
 };
 
 
@@ -54,5 +58,36 @@ export class WordCloudSettingTab extends PluginSettingTab {
                         }
                     })
             );
+
+        new Setting(containerEl)
+            .setName("Источники заметок")
+            .setDesc("Директории из которых берутся заметки (Каждая директория на новой строке)")
+            .addTextArea(text => {
+                text
+                    .setPlaceholder("Каждая директория на новой строке")
+                    .setValue(this.plugin.settings.directories.join("\n"))
+                    .onChange(async (value) => {
+                        this.plugin.settings.directories = value
+                            .split("\n")
+                            .map(s => s.trim())
+                            .filter(s => s.length > 0);
+                        await this.plugin.saveSettings();
+                    });
+            });
+        new Setting(containerEl)
+            .setName("Игнорировать директории")
+            .setDesc("Директории из которых не будут браться заметки (Каждая директория на новой строке)")
+            .addTextArea(text => {
+                text
+                    .setPlaceholder("Каждая директория на новой строке")
+                    .setValue(this.plugin.settings.ignore_directories.join("\n"))
+                    .onChange(async (value) => {
+                        this.plugin.settings.ignore_directories = value
+                            .split("\n")
+                            .map(s => s.trim())
+                            .filter(s => s.length > 0);
+                        await this.plugin.saveSettings();
+                    });
+            });
     }
 }

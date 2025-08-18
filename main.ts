@@ -6,13 +6,11 @@ export default class WordCloudPlugin extends Plugin {
     settings: WordCloudSettings = DEFAULT_SETTINGS;
 
     async onload() {
-        console.log("WordCloud Plugin loaded!");
-
         await this.loadSettings();
 
         this.registerView(
             VIEW_TYPE_WORDCLOUD,
-            (leaf) => new WordCloudView(leaf)
+            (leaf) => new WordCloudView(leaf, this.settings, this.saveSettings.bind(this))
         );
 
         this.addRibbonIcon("cloud", "Сделать Word Cloud", async () => {
