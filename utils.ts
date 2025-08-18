@@ -8,7 +8,6 @@ export async function getWordFrequencies(app: App, usePrepositions: boolean): Pr
     for (let file of files) {
         const raw = await app.vault.read(file);
 
-        // Убираем markdown-разметку и ссылки
         const clean = raw
             .replace(/^---[\s\S]*?---\s*/m, "")   // YAML frontmatter
             .replace(/```[\s\S]*?```/g, "")       // code blocks
@@ -20,11 +19,10 @@ export async function getWordFrequencies(app: App, usePrepositions: boolean): Pr
             .toLowerCase()
             .normalize("NFKC");
 
-        // Разделяем на слова (только a-z, а-я)
         const words = clean.match(/\p{L}+(?:-\p{L}+)?/gu) || [];
         
         for (let w of words) {
-            if (w.length < 2) continue; // пропускаем короткие
+            if (w.length < 2) continue; // TODO: add to settings
             if (!usePrepositions && PREPOSITIONS.has(w)) continue;
             freq.set(w, (freq.get(w) || 0) + 1);
         }
