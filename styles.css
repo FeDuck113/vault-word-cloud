@@ -1,6 +1,13 @@
+.open-settings-button {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    z-index: 99;
+}
+
 .wordcloud-settings {
     position: absolute;
-    top: 10px;
+    top: 40px;
     right: 10px;
     background-color: var(--background-primary);
     border: 1px solid var(--background-modifier-border);
@@ -9,6 +16,9 @@
     z-index: 100;
     box-shadow: 0 5px 6px rgba(0,0,0,0.5);
     font-size: var(--font-ui-small);
+}
+.wordcloud-settings h2 h3{
+    margin: 5px;
 }
 .wordcloud-settings input[type="checkbox"] {
     cursor: pointer;
@@ -23,6 +33,13 @@
     font-size: var(--font-ui-small);
     padding: 2px 6px;
     cursor: pointer;
+}
+
+.dirs-block {
+    margin-bottom: 10px;
+}
+.dirs-block h3 {
+    margin: 3px;
 }
 
 .dirs-list {

@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf, TextComponent } from "obsidian";
+import { ItemView, WorkspaceLeaf, TextComponent, setIcon } from "obsidian";
 import { getWordFrequencies } from "./utils";
 import * as d3 from "d3";
 import { schemeCategory10 } from "d3-scale-chromatic";
@@ -16,6 +16,9 @@ interface Word {
   y?: number;
   rotate?: number;
 }
+
+const dir_head = "Select directions"
+const ignor_dir_head = "Ignor directions";
 
 export class WordCloudView extends ItemView {
     private settings: WordCloudSettings;
@@ -41,19 +44,39 @@ export class WordCloudView extends ItemView {
 
         container.createEl("h2", { text: "Анализ заметок..." });
 
-        const settingsPanel = container.createDiv(); //TODO: закрыт по умолчанию, создать кнопку для открытия
+
+        const settingsPanel = container.createDiv();
         settingsPanel.addClass("wordcloud-settings");
+        settingsPanel.style.display = "none";
+
+        const openSettingsButton = container.createEl("button");
+        openSettingsButton.addClass("open-settings-button");
+        openSettingsButton.addClass("icon-button");
+        openSettingsButton.style.marginBottom = "10px";
+        openSettingsButton.style.cursor = "pointer";
+        setIcon(openSettingsButton, "gear");
+        openSettingsButton.onclick = () => {
+            settingsPanel.style.display = "block";
+        }
+
 
         const titleRow = settingsPanel.createDiv();
         titleRow.style.display = "flex";
         titleRow.style.justifyContent = "space-between";
         titleRow.style.alignItems = "center";
 
-        const title = titleRow.createEl("h3", { text: "Settings" });
+        const title = titleRow.createEl("h2", { text: "Settings" });
         title.style.display = "inline-block";
-        const closeButton = titleRow.createEl("button", { text: "✕" });
+        const closeButton = titleRow.createEl("button");
+        closeButton.addClass("icon-button");
+        setIcon(closeButton, "cross");
+        closeButton.onclick = () => {
+            settingsPanel.style.display = "none";
+        }
 
-        const checkboxLabel = settingsPanel.createEl("label");
+        const checkboxBlock = settingsPanel.createDiv();
+        checkboxBlock.addClass("dirs-block");
+        const checkboxLabel = checkboxBlock.createEl("label");
         const checkbox = checkboxLabel.createEl("input", { type: "checkbox" }) as HTMLInputElement;
         checkbox.checked = this.settings.usePrepositions;
         checkboxLabel.appendText(" Учитывать предлоги");
@@ -66,11 +89,11 @@ export class WordCloudView extends ItemView {
 
         const dirsBlock = settingsPanel.createDiv();
         dirsBlock.addClass("dirs-block");
-        this.renderDirectoryControls(dirsBlock);
+        this.renderDirectoryControls(dirsBlock, dir_head);
 
         const ignor_dirsBlock = settingsPanel.createDiv();
         ignor_dirsBlock.addClass("dirs-block");
-        this.renderDirectoryControls(ignor_dirsBlock, true);
+        this.renderDirectoryControls(ignor_dirsBlock, ignor_dir_head, true);
 
         const svgContainer = container.createDiv();
         svgContainer.id = "wordcloud-svg-container";
@@ -86,9 +109,11 @@ export class WordCloudView extends ItemView {
         await this.renderWordList(container);
     }
 
-    private renderDirectoryControls(container: HTMLElement, isIgnore: boolean = false) {
+    private renderDirectoryControls(container: HTMLElement, headText: string, isIgnore: boolean = false) {
         container.empty();
         const main_container = this.containerEl.children[1] as HTMLElement;
+
+        container.createEl("h3", { text: headText });
 
         const inputWrapper = container.createDiv();
         inputWrapper.style.display = "flex";
@@ -104,7 +129,6 @@ export class WordCloudView extends ItemView {
 
 
         const addButton = container.createEl("button", { text: "Add" });
-        addButton.style.marginBottom = "5px";
 
         addButton.onclick = () => {
             const path = input.getValue().trim();
@@ -121,7 +145,7 @@ export class WordCloudView extends ItemView {
                 this.renderWordList(main_container);
                 this.saveSettings();
                 input.setValue("");
-                this.renderDirectoryControls(container, isIgnore);
+                this.renderDirectoryControls(container, headText, isIgnore);
             }
         };
 
@@ -139,7 +163,7 @@ export class WordCloudView extends ItemView {
                 this.renderWordList(main_container);
                 this.saveSettings();
                 input.setValue("");
-                this.renderDirectoryControls(container, isIgnore);
+                this.renderDirectoryControls(container, headText, isIgnore);
             }
         }
         });
@@ -161,7 +185,7 @@ export class WordCloudView extends ItemView {
                     this.renderWordCloud(main_container);
                     this.renderWordList(main_container);
                     this.saveSettings();
-                    this.renderDirectoryControls(container, true);
+                    this.renderDirectoryControls(container, ignor_dir_head, true);
                 };
             });
         }
@@ -179,7 +203,7 @@ export class WordCloudView extends ItemView {
                     this.renderWordCloud(main_container);
                     this.renderWordList(main_container);
                     this.saveSettings();
-                    this.renderDirectoryControls(container);
+                    this.renderDirectoryControls(container, dir_head);
                 };
             });
         }
