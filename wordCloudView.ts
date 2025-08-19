@@ -68,6 +68,10 @@ export class WordCloudView extends ItemView {
         dirsBlock.addClass("dirs-block");
         this.renderDirectoryControls(dirsBlock);
 
+        const ignor_dirsBlock = settingsPanel.createDiv();
+        ignor_dirsBlock.addClass("dirs-block");
+        this.renderDirectoryControls(ignor_dirsBlock, true);
+
         const svgContainer = container.createDiv();
         svgContainer.id = "wordcloud-svg-container";
         svgContainer.setCssStyles({
@@ -82,7 +86,7 @@ export class WordCloudView extends ItemView {
         await this.renderWordList(container);
     }
 
-    private renderDirectoryControls(container: HTMLElement) {
+    private renderDirectoryControls(container: HTMLElement, isIgnore: boolean = false) {
         container.empty();
         const main_container = this.containerEl.children[1] as HTMLElement;
 
@@ -101,15 +105,23 @@ export class WordCloudView extends ItemView {
 
         const addButton = container.createEl("button", { text: "Add" });
         addButton.style.marginBottom = "5px";
+
         addButton.onclick = () => {
             const path = input.getValue().trim();
             if (path) {
-                this.settings.directories.push(path);
+                if (isIgnore) {
+                    console.log(this.settings.directories, this.settings.ignore_directories);
+                    this.settings.ignore_directories.push(path);
+                }
+                else {
+                    console.log(this.settings.directories, this.settings.ignore_directories);
+                    this.settings.directories.push(path);
+                }
                 this.renderWordCloud(main_container);
                 this.renderWordList(main_container);
                 this.saveSettings();
                 input.setValue("");
-                this.renderDirectoryControls(container);
+                this.renderDirectoryControls(container, isIgnore);
             }
         };
 
@@ -117,36 +129,60 @@ export class WordCloudView extends ItemView {
         if (evt.key === "Enter") {
             const path = input.getValue().trim();
             if (path) {
-            this.settings.directories.push(path);
-            this.renderWordCloud(main_container);
-            this.renderWordList(main_container);
-            this.saveSettings();
-            input.setValue("");
-            this.renderDirectoryControls(container);
+                if (isIgnore) {
+                    this.settings.ignore_directories.push(path);
+                }
+                else {
+                    this.settings.directories.push(path);
+                }
+                this.renderWordCloud(main_container);
+                this.renderWordList(main_container);
+                this.saveSettings();
+                input.setValue("");
+                this.renderDirectoryControls(container, isIgnore);
             }
         }
         });
 
 
-        // 
         const list = container.createDiv();
         list.addClass("dirs-list");
-        this.settings.directories.forEach((dir, idx) => {
-            const row = list.createDiv();
-            row.addClass("dirs-item");
-            row.setText(dir);
+        if (isIgnore) {
+            this.settings.ignore_directories.forEach((dir, idx) => {
+                const row = list.createDiv();
+                row.addClass("dirs-item");
+                row.setText(dir);
 
-            const removeBtn = row.createEl("span", { text: "✕" });
-            removeBtn.style.marginLeft = "8px";
-            removeBtn.style.cursor = "pointer";
-            removeBtn.onclick = () => {
-                this.settings.directories.splice(idx, 1);
-                this.renderWordCloud(main_container);
-                this.renderWordList(main_container);
-                this.saveSettings();
-                this.renderDirectoryControls(container);
-            };
-        });
+                const removeBtn = row.createEl("span", { text: "✕" });
+                removeBtn.style.marginLeft = "8px";
+                removeBtn.style.cursor = "pointer";
+                removeBtn.onclick = () => {
+                    this.settings.ignore_directories.splice(idx, 1);
+                    this.renderWordCloud(main_container);
+                    this.renderWordList(main_container);
+                    this.saveSettings();
+                    this.renderDirectoryControls(container, true);
+                };
+            });
+        }
+        else {
+            this.settings.directories.forEach((dir, idx) => {
+                const row = list.createDiv();
+                row.addClass("dirs-item");
+                row.setText(dir);
+
+                const removeBtn = row.createEl("span", { text: "✕" });
+                removeBtn.style.marginLeft = "8px";
+                removeBtn.style.cursor = "pointer";
+                removeBtn.onclick = () => {
+                    this.settings.directories.splice(idx, 1);
+                    this.renderWordCloud(main_container);
+                    this.renderWordList(main_container);
+                    this.saveSettings();
+                    this.renderDirectoryControls(container);
+                };
+            });
+        }
     }
 
 
@@ -154,7 +190,7 @@ export class WordCloudView extends ItemView {
         const svgContainer = container.querySelector("#wordcloud-svg-container") as HTMLElement;
         svgContainer.empty();
 
-        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories);
+        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories, this.settings.ignore_directories);
 
         const sorted = Array.from(freq.entries())
             .sort((a, b) => b[1] - a[1])
@@ -232,7 +268,7 @@ export class WordCloudView extends ItemView {
         const oldList = container.querySelector("ul");
         if (oldList) oldList.remove();
 
-        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories);
+        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories, this.settings.ignore_directories);
 
         const sorted = Array.from(freq.entries())
             .sort((a, b) => b[1] - a[1])
