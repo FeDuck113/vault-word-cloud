@@ -4,14 +4,18 @@ import WordCloudPlugin from "./main";
 
 export interface WordCloudSettings {
     usePrepositions: boolean;
-    maxWords: number;
+    minWordLength: number;
+    maxWordsCloud: number;
+    maxWordsList: number;
     directories: string[];
     ignore_directories: string[];
 }
 
 export const DEFAULT_SETTINGS: WordCloudSettings = {
     usePrepositions: false,
-    maxWords: 100,
+    minWordLength: 2,
+    maxWordsCloud: 100,
+    maxWordsList: 10,
     directories: [],
     ignore_directories: [],
 };
@@ -44,20 +48,54 @@ export class WordCloudSettingTab extends PluginSettingTab {
             );
 
         new Setting(containerEl)
-            .setName("Maximum word count in the cloud")
-            .setDesc("Specify the maximum number of words to display in the cloud")
+            .setName("Минимальная длина слова")
+            .setDesc("Меньше это значения слова не будут учитываться. Оптимальное значение - 2")
             .addText((text) =>
                 text
-                    .setPlaceholder("For example, 100")
-                    .setValue(this.plugin.settings.maxWords.toString())
+                    .setPlaceholder("2")
+                    .setValue(this.plugin.settings.minWordLength.toString())
                     .onChange(async (value) => {
                         const num = parseInt(value);
                         if (!isNaN(num)) {
-                            this.plugin.settings.maxWords = num;
+                            this.plugin.settings.minWordLength = num;
                             await this.plugin.saveSettings();
                         }
                     })
             );
+        
+
+        new Setting(containerEl)
+            .setName("Maximum word in the cloud")
+            .setDesc("Specify the maximum number of words to display in the cloud")
+            .addText((text) =>
+                text
+                    .setPlaceholder("100")
+                    .setValue(this.plugin.settings.maxWordsCloud.toString())
+                    .onChange(async (value) => {
+                        const num = parseInt(value);
+                        if (!isNaN(num)) {
+                            this.plugin.settings.maxWordsCloud = num;
+                            await this.plugin.saveSettings();
+                        }
+                    })
+            );
+
+        new Setting(containerEl)
+            .setName("Maximum word in the list")
+            .setDesc("Specify the maximum number of words to display in the list")
+            .addText((text) =>
+                text
+                    .setPlaceholder("10")
+                    .setValue(this.plugin.settings.maxWordsList.toString())
+                    .onChange(async (value) => {
+                        const num = parseInt(value);
+                        if (!isNaN(num)) {
+                            this.plugin.settings.maxWordsList = num;
+                            await this.plugin.saveSettings();
+                        }
+                    })
+            );
+
 
         new Setting(containerEl)
             .setName("Источники заметок")

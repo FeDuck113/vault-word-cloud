@@ -49,15 +49,25 @@ export class WordCloudView extends ItemView {
         settingsPanel.addClass("wordcloud-settings");
         settingsPanel.style.display = "none";
 
-        const openSettingsButton = container.createEl("button");
-        openSettingsButton.addClass("open-settings-button");
+        const sideButtonsBlock = container.createDiv();
+        sideButtonsBlock.addClass("side-buttons-block");
+
+        const openSettingsButton = sideButtonsBlock.createEl("button");
+        openSettingsButton.addClass("side-buttons");
         openSettingsButton.addClass("icon-button");
-        openSettingsButton.style.marginBottom = "10px";
-        openSettingsButton.style.cursor = "pointer";
         setIcon(openSettingsButton, "gear");
         openSettingsButton.onclick = () => {
             settingsPanel.style.display = "block";
         }
+
+        const refreshButton = sideButtonsBlock.createEl("button");
+        refreshButton.addClass("side-buttons");
+        refreshButton.addClass("icon-button");
+        setIcon(refreshButton, "refresh-cw");
+        refreshButton.onclick = () => {
+            this.renderWordCloud(container);
+            this.renderWordList(container);
+        };
 
 
         const titleRow = settingsPanel.createDiv();
@@ -214,11 +224,11 @@ export class WordCloudView extends ItemView {
         const svgContainer = container.querySelector("#wordcloud-svg-container") as HTMLElement;
         svgContainer.empty();
 
-        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories, this.settings.ignore_directories);
+        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories, this.settings.ignore_directories, this.settings.minWordLength);
 
         const sorted = Array.from(freq.entries())
             .sort((a, b) => b[1] - a[1])
-            .slice(0, 100);
+            .slice(0, this.settings.maxWordsCloud || 100);
 
         const words = sorted.map(([word, count]) => ({
             text: word,
@@ -282,7 +292,7 @@ export class WordCloudView extends ItemView {
                     const search = searchPlugin && searchPlugin.instance;
 
                     search.openGlobalSearch(this.textContent);
-                }); //TODO: всплывающее окно с кол-вом
+                });
         }
     }
 
@@ -292,16 +302,24 @@ export class WordCloudView extends ItemView {
         const oldList = container.querySelector("ul");
         if (oldList) oldList.remove();
 
-        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories, this.settings.ignore_directories);
+        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories, this.settings.ignore_directories, this.settings.minWordLength);
 
         const sorted = Array.from(freq.entries())
             .sort((a, b) => b[1] - a[1])
-            .slice(0, 10);
+            .slice(0, this.settings.maxWordsList || 10);
 
         const list = container.createEl("ul");
         for (let [word, count] of sorted) {
             const li = list.createEl("li", { text: `${word}: ${count}` });
-            //TODO: add click handler to search word
+
+            li.style.cursor = "pointer";
+            li.addEventListener("click", () => {
+                //@ts-ignore
+                const searchPlugin = app.internalPlugins.getPluginById("global-search");
+                const search = searchPlugin && searchPlugin.instance;
+
+                search.openGlobalSearch(word);
+            });
         }
     }
 

@@ -1,13 +1,19 @@
-.open-settings-button {
+.side-buttons-block {
     position: absolute;
-    top: 50px;
+    display: flex;
+    flex-direction: column;
+    top: 45px;
     right: 20px;
     z-index: 99;
+}
+.side-buttons {
+    cursor: pointer;
+    margin-bottom: 5px;
 }
 
 .wordcloud-settings {
     position: absolute;
-    top: 40px;
+    top: 35px;
     right: 10px;
     background-color: var(--background-primary);
     border: 1px solid var(--background-modifier-border);
