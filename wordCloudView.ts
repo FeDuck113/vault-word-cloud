@@ -17,8 +17,8 @@ interface Word {
   rotate?: number;
 }
 
-const dir_head = "Select directions"
-const ignor_dir_head = "Ignor directions";
+const dir_head = "Source folders"
+const ignor_dir_head = "Ignored folders";
 
 export class WordCloudView extends ItemView {
     private settings: WordCloudSettings;
@@ -35,14 +35,14 @@ export class WordCloudView extends ItemView {
     }
 
     getDisplayText() {
-        return "Word Cloud";
+        return "Notes Overview";
     }
 
     async onOpen() {
         const container = this.containerEl.children[1] as HTMLElement;
         container.empty();
 
-        container.createEl("h2", { text: "Анализ заметок..." });
+        container.createEl("h2", { text: "Notes Overview" });
 
 
         const settingsPanel = container.createDiv();
@@ -53,6 +53,7 @@ export class WordCloudView extends ItemView {
         sideButtonsBlock.addClass("side-buttons-block");
 
         const openSettingsButton = sideButtonsBlock.createEl("button");
+        openSettingsButton.setAttr("aria-label", "Open settings");
         openSettingsButton.addClass("side-buttons");
         openSettingsButton.addClass("icon-button");
         setIcon(openSettingsButton, "gear");
@@ -61,6 +62,7 @@ export class WordCloudView extends ItemView {
         }
 
         const refreshButton = sideButtonsBlock.createEl("button");
+        refreshButton.setAttr("aria-label", "Refresh");
         refreshButton.addClass("side-buttons");
         refreshButton.addClass("icon-button");
         setIcon(refreshButton, "refresh-cw");
@@ -78,6 +80,7 @@ export class WordCloudView extends ItemView {
         const title = titleRow.createEl("h2", { text: "Settings" });
         title.style.display = "inline-block";
         const closeButton = titleRow.createEl("button");
+        closeButton.setAttr("aria-label", "Close settings");
         closeButton.addClass("icon-button");
         setIcon(closeButton, "cross");
         closeButton.onclick = () => {
@@ -89,7 +92,7 @@ export class WordCloudView extends ItemView {
         const checkboxLabel = checkboxBlock.createEl("label");
         const checkbox = checkboxLabel.createEl("input", { type: "checkbox" }) as HTMLInputElement;
         checkbox.checked = this.settings.usePrepositions;
-        checkboxLabel.appendText(" Учитывать предлоги");
+        checkboxLabel.appendText("Include prepositions");
         checkbox.addEventListener("change", async () => {
             this.settings.usePrepositions = checkbox.checked;
             await this.saveSettings();
@@ -131,7 +134,7 @@ export class WordCloudView extends ItemView {
         inputWrapper.style.marginBottom = "5px";
 
         const input = new TextComponent(inputWrapper);
-        input.setPlaceholder("Введите путь к папке…");
+        input.setPlaceholder("Enter folder path…");
         input.inputEl.style.flex = "1";
         input.inputEl.style.marginRight = "5px";
 
@@ -224,7 +227,7 @@ export class WordCloudView extends ItemView {
         const svgContainer = container.querySelector("#wordcloud-svg-container") as HTMLElement;
         svgContainer.empty();
 
-        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories, this.settings.ignore_directories, this.settings.minWordLength);
+        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories, this.settings.ignore_directories, this.settings.minWordLength, this.settings.stopwords);
 
         const sorted = Array.from(freq.entries())
             .sort((a, b) => b[1] - a[1])
@@ -232,7 +235,7 @@ export class WordCloudView extends ItemView {
 
         const words = sorted.map(([word, count]) => ({
             text: word,
-            size: 10 + count * 2,
+            size: Math.min(10 + count * 2, 100),
             count: count
         }));
 
@@ -302,7 +305,7 @@ export class WordCloudView extends ItemView {
         const oldList = container.querySelector("ul");
         if (oldList) oldList.remove();
 
-        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories, this.settings.ignore_directories, this.settings.minWordLength);
+        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories, this.settings.ignore_directories, this.settings.minWordLength, this.settings.stopwords);
 
         const sorted = Array.from(freq.entries())
             .sort((a, b) => b[1] - a[1])

@@ -1,7 +1,7 @@
 import { App, TFile } from "obsidian";
 import { PREPOSITIONS } from "./prepositions";
 
-export async function getWordFrequencies(app: App, usePrepositions: boolean, directories: string[], ignore_directories: string[], minWordLength: number): Promise<Map<string, number>> {
+export async function getWordFrequencies(app: App, usePrepositions: boolean, directories: string[], ignore_directories: string[], minWordLength: number, stopwords: string[]): Promise<Map<string, number>> {
     let files = app.vault.getMarkdownFiles();
     if (directories.length > 0) {
         files = files.filter((file) =>
@@ -34,6 +34,7 @@ export async function getWordFrequencies(app: App, usePrepositions: boolean, dir
         
         for (let w of words) {
             if (w.length < minWordLength) continue;
+            if (stopwords.some(item => item.toLowerCase() === w)) continue;
             if (!usePrepositions && PREPOSITIONS.has(w)) continue;
             freq.set(w, (freq.get(w) || 0) + 1);
         }

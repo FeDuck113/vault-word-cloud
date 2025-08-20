@@ -9,6 +9,7 @@ export interface WordCloudSettings {
     maxWordsList: number;
     directories: string[];
     ignore_directories: string[];
+    stopwords: string[];
 }
 
 export const DEFAULT_SETTINGS: WordCloudSettings = {
@@ -18,6 +19,7 @@ export const DEFAULT_SETTINGS: WordCloudSettings = {
     maxWordsList: 10,
     directories: [],
     ignore_directories: [],
+    stopwords: [],
 };
 
 
@@ -36,8 +38,8 @@ export class WordCloudSettingTab extends PluginSettingTab {
         containerEl.createEl("h2", { text: "Настройки Word Cloud" });
 
         new Setting(containerEl)
-            .setName("Учитывать предлоги")
-            .setDesc("Включить или отключить учет предлогов при анализе текста.")
+            .setName("Include prepositions")
+            .setDesc("Include or not prepositions into text analysis")
             .addToggle((toggle) =>
                 toggle
                     .setValue(this.plugin.settings.usePrepositions)
@@ -48,8 +50,8 @@ export class WordCloudSettingTab extends PluginSettingTab {
             );
 
         new Setting(containerEl)
-            .setName("Минимальная длина слова")
-            .setDesc("Меньше это значения слова не будут учитываться. Оптимальное значение - 2")
+            .setName("Minimum word length")
+            .setDesc("Words shorter than this value will be ignored (recommended - 2)")
             .addText((text) =>
                 text
                     .setPlaceholder("2")
@@ -65,8 +67,8 @@ export class WordCloudSettingTab extends PluginSettingTab {
         
 
         new Setting(containerEl)
-            .setName("Maximum word in the cloud")
-            .setDesc("Specify the maximum number of words to display in the cloud")
+            .setName("Max words in cloud")
+            .setDesc("Specify the maximum number of words displayed in the cloud")
             .addText((text) =>
                 text
                     .setPlaceholder("100")
@@ -81,8 +83,8 @@ export class WordCloudSettingTab extends PluginSettingTab {
             );
 
         new Setting(containerEl)
-            .setName("Maximum word in the list")
-            .setDesc("Specify the maximum number of words to display in the list")
+            .setName("Max words in list")
+            .setDesc("Specify the maximum number of words displayed in the list")
             .addText((text) =>
                 text
                     .setPlaceholder("10")
@@ -98,11 +100,11 @@ export class WordCloudSettingTab extends PluginSettingTab {
 
 
         new Setting(containerEl)
-            .setName("Источники заметок")
-            .setDesc("Директории из которых берутся заметки (Каждая директория на новой строке)")
+            .setName("Notes source folders")
+            .setDesc("Only notes from these folders will be processed (one per line)")
             .addTextArea(text => {
                 text
-                    .setPlaceholder("Каждая директория на новой строке")
+                    .setPlaceholder("One path per line")
                     .setValue(this.plugin.settings.directories.join("\n"))
                     .onChange(async (value) => {
                         this.plugin.settings.directories = value
@@ -113,14 +115,31 @@ export class WordCloudSettingTab extends PluginSettingTab {
                     });
             });
         new Setting(containerEl)
-            .setName("Игнорировать директории")
-            .setDesc("Директории из которых не будут браться заметки (Каждая директория на новой строке)")
+            .setName("Ignored note folders")
+            .setDesc("Notes in these folders will not be analyzed (one per line)")
             .addTextArea(text => {
                 text
-                    .setPlaceholder("Каждая директория на новой строке")
+                    .setPlaceholder("One path per line")
                     .setValue(this.plugin.settings.ignore_directories.join("\n"))
                     .onChange(async (value) => {
                         this.plugin.settings.ignore_directories = value
+                            .split("\n")
+                            .map(s => s.trim())
+                            .filter(s => s.length > 0);
+                        await this.plugin.saveSettings();
+                    });
+            });
+
+        
+        new Setting(containerEl)
+            .setName("Stopwords")
+            .setDesc(" (one per line)")
+            .addTextArea(text => {
+                text
+                    .setPlaceholder("One path per line")
+                    .setValue(this.plugin.settings.stopwords.join("\n"))
+                    .onChange(async (value) => {
+                        this.plugin.settings.stopwords = value
                             .split("\n")
                             .map(s => s.trim())
                             .filter(s => s.length > 0);

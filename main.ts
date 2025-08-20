@@ -13,7 +13,7 @@ export default class WordCloudPlugin extends Plugin {
             (leaf) => new WordCloudView(leaf, this.settings, this.saveSettings.bind(this))
         );
 
-        this.addRibbonIcon("cloud", "Сделать Word Cloud", async () => {
+        this.addRibbonIcon("cloud", "Analyze Notes", async () => {
             this.activateView();
         });
 
