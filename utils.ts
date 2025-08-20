@@ -1,7 +1,7 @@
-import { App, TFile } from "obsidian";
-import { PREPOSITIONS } from "./prepositions";
+import { App } from "obsidian";
+import { PREPOSITION_SETS } from "./prepositions";
 
-export async function getWordFrequencies(app: App, usePrepositions: boolean, directories: string[], ignore_directories: string[], minWordLength: number, stopwords: string[]): Promise<Map<string, number>> {
+export async function getWordFrequencies(app: App, directories: string[], ignore_directories: string[], minWordLength: number, stopwords: string[], usePrepositions: boolean, langs: string[]): Promise<Map<string, number>> {
     let files = app.vault.getMarkdownFiles();
     if (directories.length > 0) {
         files = files.filter((file) =>
@@ -14,6 +14,15 @@ export async function getWordFrequencies(app: App, usePrepositions: boolean, dir
         );
     }
 
+    let prepositions: Set<string> = new Set();
+    if (!usePrepositions) {
+        langs.forEach(lang => {
+            if (lang in PREPOSITION_SETS && PREPOSITION_SETS[lang]) {
+                prepositions = new Set([...prepositions, ...PREPOSITION_SETS[lang]]);
+            }
+        });
+    }
+    
     const freq = new Map<string, number>();
 
     for (let file of files) {
@@ -35,7 +44,7 @@ export async function getWordFrequencies(app: App, usePrepositions: boolean, dir
         for (let w of words) {
             if (w.length < minWordLength) continue;
             if (stopwords.some(item => item.toLowerCase() === w)) continue;
-            if (!usePrepositions && PREPOSITIONS.has(w)) continue;
+            if (!usePrepositions && prepositions.has(w)) continue;
             freq.set(w, (freq.get(w) || 0) + 1);
         }
     }

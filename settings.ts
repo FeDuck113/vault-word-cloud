@@ -3,23 +3,25 @@ import WordCloudPlugin from "./main";
 
 
 export interface WordCloudSettings {
-    usePrepositions: boolean;
     minWordLength: number;
     maxWordsCloud: number;
     maxWordsList: number;
     directories: string[];
     ignore_directories: string[];
     stopwords: string[];
+    usePrepositions: boolean;
+    langs: string[];
 }
 
 export const DEFAULT_SETTINGS: WordCloudSettings = {
-    usePrepositions: false,
     minWordLength: 2,
     maxWordsCloud: 100,
     maxWordsList: 10,
     directories: [],
     ignore_directories: [],
     stopwords: [],
+    usePrepositions: false,
+    langs: ["ru", "en", "fr", "de", "es", "it", "cz"]
 };
 
 
@@ -37,17 +39,7 @@ export class WordCloudSettingTab extends PluginSettingTab {
         containerEl.empty();
         containerEl.createEl("h2", { text: "Настройки Word Cloud" });
 
-        new Setting(containerEl)
-            .setName("Include prepositions")
-            .setDesc("Include or not prepositions into text analysis")
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.usePrepositions)
-                    .onChange(async (value) => {
-                        this.plugin.settings.usePrepositions = value;
-                        await this.plugin.saveSettings();
-                    })
-            );
+        
 
         new Setting(containerEl)
             .setName("Minimum word length")
@@ -99,6 +91,7 @@ export class WordCloudSettingTab extends PluginSettingTab {
             );
 
 
+        containerEl.createEl("hr");
         new Setting(containerEl)
             .setName("Notes source folders")
             .setDesc("Only notes from these folders will be processed (one per line)")
@@ -112,7 +105,7 @@ export class WordCloudSettingTab extends PluginSettingTab {
                             .map(s => s.trim())
                             .filter(s => s.length > 0);
                         await this.plugin.saveSettings();
-                    });
+                    }).inputEl.style.height = "70px";
             });
         new Setting(containerEl)
             .setName("Ignored note folders")
@@ -127,16 +120,16 @@ export class WordCloudSettingTab extends PluginSettingTab {
                             .map(s => s.trim())
                             .filter(s => s.length > 0);
                         await this.plugin.saveSettings();
-                    });
+                    }).inputEl.style.height = "70px";
             });
 
         
         new Setting(containerEl)
             .setName("Stopwords")
-            .setDesc(" (one per line)")
+            .setDesc("Add words to always ignore during text analysis (one per line)")
             .addTextArea(text => {
                 text
-                    .setPlaceholder("One path per line")
+                    .setPlaceholder("One word per line")
                     .setValue(this.plugin.settings.stopwords.join("\n"))
                     .onChange(async (value) => {
                         this.plugin.settings.stopwords = value
@@ -144,7 +137,36 @@ export class WordCloudSettingTab extends PluginSettingTab {
                             .map(s => s.trim())
                             .filter(s => s.length > 0);
                         await this.plugin.saveSettings();
-                    });
+                    }).inputEl.style.height = "100px";
+            });
+
+        containerEl.createEl("hr");
+        new Setting(containerEl)
+            .setName("Include prepositions")
+            .setDesc("Include or not prepositions into text analysis")
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.usePrepositions)
+                    .onChange(async (value) => {
+                        this.plugin.settings.usePrepositions = value;
+                        await this.plugin.saveSettings();
+                    })
+            );
+
+        new Setting(containerEl)
+            .setName("Preposition languages")
+            .setDesc("Select which languages' prepositions should be ignored during analysis (one code line). Supported languages: ru, en, fr, de, es, it, cz")
+            .addTextArea(text => {
+                text
+                    .setPlaceholder("One code per line")
+                    .setValue(this.plugin.settings.langs.join("\n"))
+                    .onChange(async (value) => {
+                        this.plugin.settings.langs = value
+                            .split("\n")
+                            .map(s => s.trim())
+                            .filter(s => s.length > 0);
+                        await this.plugin.saveSettings();
+                    }).inputEl.style.height = "130px";
             });
     }
 }

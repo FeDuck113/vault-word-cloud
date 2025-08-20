@@ -227,7 +227,7 @@ export class WordCloudView extends ItemView {
         const svgContainer = container.querySelector("#wordcloud-svg-container") as HTMLElement;
         svgContainer.empty();
 
-        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories, this.settings.ignore_directories, this.settings.minWordLength, this.settings.stopwords);
+        const freq = await getWordFrequencies(this.app, this.settings.directories, this.settings.ignore_directories, this.settings.minWordLength, this.settings.stopwords, this.settings.usePrepositions, this.settings.langs);
 
         const sorted = Array.from(freq.entries())
             .sort((a, b) => b[1] - a[1])
@@ -305,7 +305,7 @@ export class WordCloudView extends ItemView {
         const oldList = container.querySelector("ul");
         if (oldList) oldList.remove();
 
-        const freq = await getWordFrequencies(this.app, this.settings.usePrepositions, this.settings.directories, this.settings.ignore_directories, this.settings.minWordLength, this.settings.stopwords);
+        const freq = await getWordFrequencies(this.app, this.settings.directories, this.settings.ignore_directories, this.settings.minWordLength, this.settings.stopwords, this.settings.usePrepositions, this.settings.langs);
 
         const sorted = Array.from(freq.entries())
             .sort((a, b) => b[1] - a[1])
