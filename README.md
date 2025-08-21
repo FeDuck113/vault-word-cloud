@@ -24,7 +24,7 @@ Quickly explore your vault’s vocabulary, see which words appear most often, an
 3. Click **Install → Enable**
 
 ### Manual installation
-1. Download the latest release from [Releases](https://github.com/USERNAME/REPO/releases)  
+1. Download the latest release from [Releases](https://github.com/FeDuck113/vault-word-cloud/releases)  
 2. Extract into your `.obsidian/plugins/` folder
 3. Reload Obsidian and enable **Vault Word Cloud** in **Settings → Community plugins**
 
