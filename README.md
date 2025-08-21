@@ -9,8 +9,9 @@ Quickly explore your vault’s vocabulary, see which words appear most often, an
 
 - **Clickable word cloud** — click on any word to search it in your vault  
 - **Frequency list view** — see exact word counts  
-- **Folder filters** — analyze specific folders or the entire vault  
-- **Stopword control** — include or exclude prepositions/conjunctions, add your own stopwords  
+- **Folder filters** — analyze specific folders or the entire vault
+- **Preposition control** - include or exclude prepositions into text analysis. Choose which languages’ prepositions should be ignored (supports EN, RU, FR, DE, CZ, ES, IT) 
+- **Stopword control** — add your own stopwords  
 - **Instant updates** — changes are saved automatically to plugin settings  
 
 ---
@@ -44,14 +45,15 @@ Limit *max words in cloud/list* and add your own *custom stopwords* you can in p
 ---
 
 # Settings
-
-- **Include prepositions** – Enable or disable counting prepositions during text analysis  
+ 
 - **Minimum word length** – Words shorter than this value will be ignored 
 - **Max words in cloud** – Maximum words displayed in the cloud  
 - **Max words in list** – Maximum words displayed in the list  
 - **Notes source folders** – Specify which folders to analyze (one per line)  
 - **Ignored note folders** – Specify which folders to exclude (one per line)  
-- **Custom stopwords** – Add words to ignore (one per line)  
+- **Custom stopwords** – Add words to ignore (one per line) 
+- **Include prepositions** – Enable or disable counting prepositions during text analysis
+- **Preposition languages** - Determine which languages' prepositions should be ignored during analysis
 
 ---
 

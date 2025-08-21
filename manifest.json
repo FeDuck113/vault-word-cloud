@@ -1,11 +1,11 @@
 {
-	"id": "word-cloud",
-	"name": "Word Cloud",
-	"version": "0.0.1",
-	"minAppVersion": "1.0.0",
-	"description": "Create word cloud",
+	"id": "vault-word-cloud",
+	"name": "Vault Word Cloud",
+	"version": "1.0.0",
+	"minAppVersion": "0.13.11",
+	"description": "Generate an interactive word cloud and frequency list from your Obsidian notes. Filter by folders, ignore stopwords, and explore your vault’s vocabulary",
 	"author": "FeDuck113",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"authorUrl": "https://github.com/FeDuck113",
+	"fundingUrl": "https://boosty.to/feduck113",
 	"isDesktopOnly": false
 }
