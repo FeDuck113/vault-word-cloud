@@ -37,7 +37,7 @@ export class WordCloudSettingTab extends PluginSettingTab {
         const { containerEl } = this;
 
         containerEl.empty();
-        containerEl.createEl("h2", { text: "Настройки Word Cloud" });
+        containerEl.createEl("h2", { text: "Vault Word Cloud settings" });
 
         
 
