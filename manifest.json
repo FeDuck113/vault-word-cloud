@@ -3,7 +3,7 @@
 	"name": "Vault Word Cloud",
 	"version": "1.0.0",
 	"minAppVersion": "0.13.11",
-	"description": "Generate an interactive word cloud and frequency list from your Obsidian notes. Filter by folders, ignore stopwords, and explore your vault’s vocabulary",
+	"description": "Generate an interactive word cloud and frequency list from your notes. Filter by folders, ignore stopwords, and explore your vault’s vocabulary",
 	"author": "FeDuck113",
 	"authorUrl": "https://github.com/FeDuck113",
 	"fundingUrl": "https://boosty.to/feduck113",

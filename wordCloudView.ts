@@ -147,11 +147,9 @@ export class WordCloudView extends ItemView {
             const path = input.getValue().trim();
             if (path) {
                 if (isIgnore) {
-                    console.log(this.settings.directories, this.settings.ignore_directories);
                     this.settings.ignore_directories.push(path);
                 }
                 else {
-                    console.log(this.settings.directories, this.settings.ignore_directories);
                     this.settings.directories.push(path);
                 }
                 this.renderWordCloud(main_container);
