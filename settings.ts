@@ -14,7 +14,7 @@ export interface WordCloudSettings {
 }
 
 export const DEFAULT_SETTINGS: WordCloudSettings = {
-    minWordLength: 2,
+    minWordLength: 3,
     maxWordsCloud: 100,
     maxWordsList: 10,
     directories: [],
@@ -43,10 +43,10 @@ export class WordCloudSettingTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName("Minimum word length")
-            .setDesc("Words shorter than this value will be ignored (recommended - 2)")
+            .setDesc("Words shorter than this value will be ignored (recommended - 3)")
             .addText((text) =>
                 text
-                    .setPlaceholder("2")
+                    .setPlaceholder("3")
                     .setValue(this.plugin.settings.minWordLength.toString())
                     .onChange(async (value) => {
                         const num = parseInt(value);
@@ -105,7 +105,7 @@ export class WordCloudSettingTab extends PluginSettingTab {
                             .map(s => s.trim())
                             .filter(s => s.length > 0);
                         await this.plugin.saveSettings();
-                    }).inputEl.style.height = "70px";
+                    }).inputEl.addClass("setting-input-s");
             });
         new Setting(containerEl)
             .setName("Ignored note folders")
@@ -120,7 +120,7 @@ export class WordCloudSettingTab extends PluginSettingTab {
                             .map(s => s.trim())
                             .filter(s => s.length > 0);
                         await this.plugin.saveSettings();
-                    }).inputEl.style.height = "70px";
+                    }).inputEl.addClass("setting-input-s");
             });
 
         
@@ -137,7 +137,7 @@ export class WordCloudSettingTab extends PluginSettingTab {
                             .map(s => s.trim())
                             .filter(s => s.length > 0);
                         await this.plugin.saveSettings();
-                    }).inputEl.style.height = "100px";
+                    }).inputEl.addClass("setting-input-m");
             });
 
         containerEl.createEl("hr");
@@ -166,7 +166,7 @@ export class WordCloudSettingTab extends PluginSettingTab {
                             .map(s => s.trim())
                             .filter(s => s.length > 0);
                         await this.plugin.saveSettings();
-                    }).inputEl.style.height = "130px";
+                    }).inputEl.addClass("setting-input-b");
             });
     }
 }
